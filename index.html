@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+ <html lang="zh-CN">
+ <head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>碳水狂欢背后的数据密码 | 武汉面包节</title>
+   <!-- 仅保留ECharts，移除地图相关CDN -->
+   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+   <style>
+     * {margin:0;padding:0;box-sizing:border;font-family:"Microsoft YaHei",sans-serif;}
+     :root {
+       --main:#8B5A2B;
+       --light:#F5EAD3;
+       --orange:#D48B47;
+       --dark:#332211;
+     }
+     body {background:var(--light);color:var(--dark);overflow-x:hidden;}
+     /* 页面容器 分区块隐藏切换 */
+     .page {width:100vw;min-height:100vh;display:none;padding:40px 20px;}
+     .page.active {display:block;}
+     /* 首页封面 */
+     #page-home {
+       background: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url('https://img0.baidu.com/it/u=3020178539,3834120119&fm=253&fmt=auto&app=138&f=JPEG?w=1920&h=1080');
+       background-size:cover;background-position:center;
+       color:#fff;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;
+     }
+     #page-home h1 {font-size:48px;margin-bottom:12px;letter-spacing:2px;}
+     #page-home p.sub {font-size:20px;margin-bottom:40px;opacity:0.9;}
+     .data-box {display:flex;gap:30px;margin-bottom:60px;flex-wrap:wrap;justify-content:center;}
+     .data-item {background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);padding:20px 30px;border-radius:12px;min-width:160px;}
+     .data-num {font-size:36px;font-weight:bold;color:#fff;margin:8px 0;}
+     .data-txt {font-size:14px;opacity:0.85;}
+     .start-btn {
+       padding:16px 48px;background:var(--orange);border:none;border-radius:50px;color:#fff;font-size:18px;cursor:pointer;transition:0.3s;
+     }
+     .start-btn:hover {background:#b87435;transform:scale(1.05);}
+     /* 顶部导航栏 */
+     .nav-bar {
+       position:sticky;top:0;z-index:99;height:60px;background:var(--main);display:flex;justify-content:center;gap:10px;align-items:center;
+     }
+     .nav-btn {
+       height:100%;padding:0 22px;border:none;background:transparent;color:#fff;font-size:16px;cursor:pointer;transition:0.2s;
+     }
+     .nav-btn.active {background:var(--orange);}
+     /* 通用区块标题 */
+     .title-block {text-align:center;margin:30px 0;}
+     .title-block h2 {font-size:32px;color:var(--main);margin-bottom:8px;}
+     .title-block p {color:#666;}
+     /* 热力图图片容器（替换原来的地图） */
+     .heatmap-img-box {
+       width:100%;
+       border-radius:10px;
+       overflow:hidden;
+       margin:20px 0;
+       background:#fff;
+       padding:10px;
+     }
+     .heatmap-img-box img {
+       width:100%;
+       display:block;
+       border-radius:6px;
+     }
+     .time-slider {width:100%;margin:10px 0;}
+     .tip-text {
+       text-align:center;
+       color:#666;
+       margin-top:8px;
+     }
+     /* 图表容器 */
+     .chart-wrap {display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:30px 0;}
+     .chart-box {background:#fff;padding:16px;border-radius:10px;height:400px;}
+     @media (max-width:768px) {.chart-wrap {grid-template-columns:1fr;}}
+     /* 榜单卡片 */
+     .rank-list {display:flex;gap:15px;overflow-x:auto;padding:10px 0;}
+     .rank-card {min-width:200px;background:#fff;padding:12px;border-radius:8px;}
+     .rank-card h4 {color:var(--main);margin-bottom:6px;}
+     /* 互动留言区 */
+     .msg-wall {background:#fff;padding:20px;border-radius:10px;margin:20px 0;min-height:200px;}
+     .test-btn,.share-btn {padding:10px 24px;background:var(--orange);color:#fff;border:none;border-radius:6px;margin:8px;cursor:pointer;}
+   </style>
+ </head>
+ <body>
+   <!-- 顶部导航（全局固定） -->
+   <div class="nav-bar" style="display:none;" id="globalNav">
+     <button class="nav-btn" data-page="map">市集热力地图</button>
+     <button class="nav-btn" data-page="user">客群画像</button>
+     <button class="nav-btn" data-page="goods">面包消费密码</button>
+     <button class="nav-btn" data-page="city">城市价值</button>
+     <button class="nav-btn" data-page="summary">总结互动</button>
+   </div>
+   <!-- 页面1 首页封面 -->
+   <div class="page active" id="page-home">
+     <h1>碳水狂欢背后的数据密码</h1>
+     <p class="sub">用数据读懂武汉面包节的消费热潮</p >
+     <div class="data-box">
+       <div class="data-item">
+         <div class="data-num" id="num1">0</div>
+         <div class="data-txt">总客流（万人次）</div>
+       </div>
+       <div class="data-item">
+         <div class="data-num" id="num2">0</div>
+         <div class="data-txt">参与品牌（家）</div>
+       </div>
+       <div class="data-item">
+         <div class="data-num" id="num3">0</div>
+         <div class="data-txt">卖出面包（万个）</div>
+       </div>
+       <div class="data-item">
+         <div class="data-num" id="num4">0</div>
+         <div class="data-txt">社交曝光（万次）</div>
+       </div>
+     </div>
+     <button class="start-btn" onclick="toMapPage()">开始探索</button>
+   </div>
+   <!-- 页面2 热力地图（替换为静态图片） -->
+   <div class="page" id="page-map">
+     <div class="title-block">
+       <h2>市集热力地图｜空间客流交互</h2>
+       <p>拖动滑块切换时段，查看场地客流热力分布</p >
+     </div>
+     <input type="range" min="0" max="3" value="1" class="time-slider" id="timeSlider">
+     <div class="heatmap-img-box">
+       <!-- 热力图占位图，可替换成自己的热力地图图片 -->
+       < img src="https://img2.baidu.com/it/u=123456789,987654321&fm=253&fmt=auto&app=120&f=JPEG?w=1400&h=700" alt="面包节场地热力图">
+     </div>
+     <p class="tip-text">图示说明：红色区域客流密集排队久，绿色区域人流宽松；热门摊位已标注爆款面包信息</p >
+   </div>
+   <!-- 页面3 客群画像 -->
+   <div class="page" id="page-user">
+     <div class="title-block">
+       <h2>客群画像｜谁在为碳水买单</h2>
+     </div>
+     <div class="chart-wrap">
+       <div class="chart-box" id="chart-age"></div>
+       <div class="chart-box" id="chart-sex"></div>
+       <div class="chart-box" id="chart-motiv"></div>
+       <div class="chart-box" id="chart-traffic"></div>
+     </div>
+   </div>
+   <!-- 页面4 消费密码 -->
+   <div class="page" id="page-goods">
+     <div class="title-block">
+       <h2>面包消费密码｜爆款与风味PK</h2>
+     </div>
+     <div class="chart-box" id="chart-sale"></div>
+     <h3 style="margin:20px 0;">爆款TOP10榜单</h3>
+     <div class="rank-list" id="rankBox"></div>
+     <div class="chart-box" id="chart-link" style="margin-top:30px;"></div>
+   </div>
+   <!-- 页面5 城市价值 -->
+   <div class="page" id="page-city">
+     <div class="title-block">
+       <h2>城市商业价值｜面包节带动商圈增长</h2>
+     </div>
+     <div class="chart-box" id="chart-grow"></div>
+   </div>
+   <!-- 页面6 总结互动 -->
+   <div class="page" id="page-summary">
+     <div class="title-block">
+       <h2>核心洞察 & 互动分享</h2>
+     </div>
+     <div style="background:#fff;padding:24px;border-radius:10px;margin-bottom:20px;">
+       <h3>数据核心洞察</h3>
+       <ul style="margin:12px 0 12px 20px;line-height:2;">
+         <li>Z世代打卡社交需求占消费动机近三成，是主力消费人群</li>
+         <li>地铁出行占比60%，面包节辐射全城通勤人群</li>
+         <li>本土创意面包销量不输外来品牌，地域烘焙竞争力强</li>
+         <li>活动拉动周边商圈同期销售额上涨28%</li>
+       </ul>
+     </div>
+     <div class="msg-wall">
+       <h3>留言墙：你为碳水狂欢花了多少钱？</h3>
+       <div id="msgList" style="margin:10px 0;line-height:1.8;">
+         <p>匿名用户：128元，一次性买了5个面包</p >
+         <p>匿名用户：76元，搭配咖啡一起消费</p >
+       </div>
+       <input placeholder="写下你的消费分享" style="width:80%;padding:8px;margin-right:8px;">
+       <button class="test-btn">提交留言</button>
+     </div>
+     <div style="text-align:center;margin-top:30px;">
+       <button class="share-btn">生成我的面包节消费报告</button>
+       <button class="test-btn">测一测你是什么碳水脑袋</button>
+     </div>
+   </div>
+   <script>
+     // ========== 1. 首页数字滚动动画 ==========
+     function animateNum(el, target, time=2000){
+       let cur = 0;
+       let step = target/(time/30);
+       let timer = setInterval(()=>{
+         cur += step;
+         if(cur >= target){cur=target;clearInterval(timer);}
+         el.innerText = Math.floor(cur);
+       },30)
+     }
+     window.onload = ()=>{
+       animateNum(document.getElementById('num1'), 28);
+       animateNum(document.getElementById('num2'), 126);
+       animateNum(document.getElementById('num3'), 42);
+       animateNum(document.getElementById('num4'), 1260);
+     }
+     // ========== 页面切换控制 ==========
+     const nav = document.getElementById('globalNav');
+     const pages = document.querySelectorAll('.page');
+     function switchPage(pageId){
+       pages.forEach(p=>p.classList.remove('active'));
+       document.getElementById('page-'+pageId).classList.add('active');
+       // 切换后只初始化图表，删除地图初始化调用
+       if(pageId==='user') setTimeout(initUserChart,100);
+       else if(pageId==='goods') setTimeout(initGoodsChart,100);
+       else if(pageId==='city') setTimeout(initCityChart,100);
+     }
+     // 首页跳转地图页（图片页面）
+     function toMapPage(){
+       nav.style.display = 'flex';
+       switchPage('map');
+     }
+     // 导航按钮绑定
+     document.querySelectorAll('.nav-btn').forEach(btn=>{
+       btn.onclick = ()=>switchPage(btn.dataset.page);
+     })
+     // ========== 3. 客群可视化图表 ==========
+     function initUserChart(){
+       // 年龄分布
+       const chartAge = echarts.init(document.getElementById('chart-age'));
+       chartAge.setOption({
+         title:{text:'客群年龄分布'},
+         xAxis:{type:'value'},yAxis:{type:'category',data:['Z世代','90后','80后','70后及以上']},
+         series:[{type:'bar',data:[42,31,20,7],color:'#D48B47'}]
+       })
+       // 性别饼图
+       const chartSex = echarts.init(document.getElementById('chart-sex'));
+       chartSex.setOption({title:{text:'性别占比'},series:[{type:'pie',radius:'50%',data:[{name:'女',value:65},{name:'男',value:35}]}]})
+       // 参与动机
+       const chartMotiv = echarts.init(document.getElementById('chart-motiv'));
+       chartMotiv.setOption({title:{text:'到场动机占比'},xAxis:{type:'category',data:['尝鲜','打卡','遛娃','其他']},series:[{type:'bar',data:[34,28,18,20]}]})
+       // 交通方式
+       const chartTraffic = echarts.init(document.getElementById('chart-traffic'));
+       chartTraffic.setOption({title:{text:'出行交通'},series:[{type:'pie',data:[{name:'地铁',value:60},{name:'自驾',value:25},{name:'跨城',value:15}]}]})
+     }
+     // ========== 4. 商品消费图表 ==========
+     function initGoodsChart(){
+       // 本土vs外来销量对比
+       const chartSale = echarts.init(document.getElementById('chart-sale'));
+       chartSale.setOption({
+         title:{text:'武汉本土 VS 外来品牌销量对比'},
+         xAxis:{data:['本土','长三角','其他城市']},yAxis:{type:'value'},
+         series:[{type:'bar',data:[18.6,15.2,8.2],name:'销量(万份)'}]
+       })
+       // 关联消费气泡图
+       const chartLink = echarts.init(document.getElementById('chart-link'));
+       chartLink.setOption({
+         title:{text:'连带消费品类占比'},
+         series:[{type:'pie',data:[{name:'咖啡',value:52},{name:'文创',value:21},{name:'饮品',value:17},{name:'轻食',value:10}]}]
+       })
+       // 填充榜单
+       const rankBox = document.getElementById('rankBox');
+       const rankData = [
+         '黄油可颂｜销量3.2万','麻薯爆浆｜销量2.8万','红酸汤牛肉面包｜猎奇TOP1','海盐卷','提拉米苏包'
+       ]
+       rankData.forEach(item=>{
+         let div = document.createElement('div');
+         div.className = 'rank-card';
+         div.innerHTML = `<h4>${item}</h4>`;
+         rankBox.appendChild(div);
+       })
+     }
+     // ========== 5. 城市商圈增长图表 ==========
+     function initCityChart(){
+       const chartGrow = echarts.init(document.getElementById('chart-grow'));
+       chartGrow.setOption({
+         title:{text:'活动前后商圈销售额变化'},
+         xAxis:{data:['活动前7天','活动第1天','活动第2天','活动第3天']},
+         yAxis:{name:'销售额增幅%'},
+         series:[{type:'line',data:[0,16,28,24],smooth:true,lineStyle:{color:'#8B5A2B'}}]
+       })
+     }
+   </script>
+ </body>
+ </html>
+ <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>碳水狂欢背后的数据密码</title>
+<style>
+/* 全局背景 */
+body {
+    margin: 0;
+    background-image: url("mianbaotu.jpg");
+    background-size: cover;
+    background-position: center;
+}
+/* 半透明遮罩保护文字可读性 */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(30,30,30,0.55);
+    z-index: -1;
+}
+#heatmapContainer {
+    width: 90%;
+    max-width: 1200px;
+    height: 600px;
+    margin: 40px auto;
+    border: 1px solid #444;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+.heat-title {
+    text-align: center;
+    color: #fff;
+    margin-top: 20px;
+}
+.heat-title h2 {
+    font-size: 26px;
+    margin-bottom: 6px;
+}
+.heat-title p {
+    color: #ccc;
+}
+.heat-legend {
+    width: 90%;
+    max-width: 1200px;
+    margin: -20px auto 30px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: #fff;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+.color-block {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+}
+.hot1 {background: #ff3300;}
+.hot2 {background: #ff9900;}
+.hot3 {background: #ffdd00;}
+.hot4 {background: #88dd22;}
+.hot5 {background: #33bbff;}
+</style>
+<div class="heat-title">
+    <h2>武汉面包节 · 市集客流热力地图</h2>
+    <p>基于28万人次客流数据，可视化全市烘焙市集热度分布</p >
+</div>
+<div id="heatmapContainer"></div>
+<div class="heat-legend">
+    <div class="legend-item">
+        <span class="color-block hot1"></span>
+        <span>恒隆广场｜超高热度</span>
+    </div>
+    <div class="legend-item">
+        <span class="color-block hot2"></span>
+        <span>江宸天街｜高热度</span>
+    </div>
+    <div class="legend-item">
+        <span class="color-block hot3"></span>
+        <span>武汉天地｜中高热度</span>
+    </div>
+    <div class="legend-item">
+        <span class="color-block hot4"></span>
+        <span>光谷世界城｜中等热度</span>
+    </div>
+    <div class="legend-item">
+        <span class="color-block hot5"></span>
+        <span>银泰创意城｜普通热度</span>
+    </div>
+</div>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/heatmap.js@2.0.5/build/heatmap.min.js"></script>
+<script>
+const heatmapContainer = document.getElementById('heatmapContainer');
+const heatmapInstance = h337.create({
+    container: heatmapContainer,
+    radius: 60,
+    maxOpacity: 0.8,
+    minOpacity: 0.1,
+    gradient: {
+        0.2: '#33bbff',
+        0.4: '#88dd22',
+        0.6: '#ffdd00',
+        0.8: '#ff9900',
+        1.0: '#ff3300'
+    }
+});
+
+const width = heatmapContainer.clientWidth;
+const height = heatmapContainer.clientHeight;
+const points = [
+    {x: width*0.22, y: height*0.32, value: 100},
+    {x: width*0.24, y: height*0.34, value: 92},
+    {x: width*0.20, y: height*0.30, value: 88},
+    {x: width*0.35, y: height*0.26, value: 78},
+    {x: width*0.37, y: height*0.28, value: 72},
+    {x: width*0.16, y: height*0.48, value: 65},
+    {x: width*0.18, y: height*0.50, value: 60},
+    {x: width*0.76, y: height*0.54, value: 48},
+    {x: width*0.78, y: height*0.56, value: 44},
+    {x: width*0.62, y: height*0.38, value: 36},
+    {x: width*0.64, y: height*0.40, value: 32},
+    {x: width*0.45, y: height*0.62, value: 22},
+    {x: width*0.52, y: height*0.70, value: 18},
+    {x: width*0.30, y: height*0.68, value: 15},
+];
+
+heatmapInstance.setData({
+    max: 100,
+    min: 0,
+    data: points
+});
+</script>
+<!-- 你的页面原有内容 -->
+</body>
+</html>

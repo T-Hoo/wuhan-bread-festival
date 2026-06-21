@@ -1,0 +1,211 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft YaHei", sans-serif;
+}
+body{
+    background-color: #fff8f0;
+    color: #442c1c;
+    line-height: 1.8;
+    padding-bottom: 80px;
+}
+.section{
+    width: 93%;
+    max-width: 1020px;
+    margin: 45px auto;
+    padding: 28px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 3px 14px rgba(140, 92, 52, 0.13);
+}
+h2{
+    color: #a05a2c;
+    margin-bottom: 18px;
+    font-size: 24px;
+    border-left: 6px solid #d48b47;
+    padding-left: 14px;
+}
+h3{
+    color: #6b4022;
+    margin: 10px 0 16px;
+    font-size: 20px;
+}
+.text{
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+/* 顶部横幅 */
+.banner{
+    background: linear-gradient(135deg, #b46d32, #d48b47);
+    color: #fff;
+    text-align: center;
+    padding: 70px 20px;
+}
+.banner h1{
+    font-size: 36px;
+    margin-bottom: 15px;
+}
+.pop-btn{
+    margin-top: 22px;
+    padding: 13px 34px;
+    border: none;
+    background: #fff;
+    color: #a05a2c;
+    font-size: 17px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.pop-btn:hover{
+    background: #442c1c;
+    color: #fff;
+}
+/* 目录 */
+.catalog-list{
+    padding-left: 22px;
+}
+.catalog-list li{
+    margin: 12px 0;
+    font-size: 16px;
+}
+/* 核心数据卡片 */
+.data-card{
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin: 30px 0;
+}
+.data-item{
+    text-align: center;
+    padding: 18px 26px;
+    background: #fff0e0;
+    border-radius: 12px;
+}
+.num{
+    display: block;
+    font-size: 32px;
+    font-weight: bold;
+    color: #b46d32;
+}
+/* 标签 */
+.tag-box{
+    display: flex;
+    gap: 15px;
+    margin: 22px 0;
+    justify-content: center;
+}
+.tag{
+    padding: 6px 16px;
+    background: #d48b47;
+    color: white;
+    border-radius: 20px;
+}
+.summary{
+    font-weight: 500;
+    font-size: 17px;
+    text-align: center;
+    margin-top: 10px;
+}
+/* WordArt词云区域 */
+#wordCloud canvas{
+    margin: 0 auto;
+    display: block;
+}
+/* 图片画廊 */
+.img-box{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+    margin-top: 22px;
+}
+.bread-img{
+    overflow: hidden;
+    border-radius: 12px;
+}
+.bread-img img{
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.bread-img img:hover{
+    transform: scale(1.12);
+}
+.bread-img p{
+    text-align: center;
+    padding: 9px;
+    background: #fff8f0;
+}
+.tip{
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-top: 12px;
+}
+/* 饼图 */
+.chart-wrap{
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+}
+/* 互动按钮 */
+.interact{
+    text-align: center;
+}
+.lottery-btn, .survey-btn{
+    display: block;
+    width: 260px;
+    margin: 18px auto;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.lottery-btn{
+    background: #d48b47;
+    color: white;
+}
+.lottery-btn:hover{
+    background: #a05a2c;
+}
+.survey-btn{
+    background: #fff0e0;
+    color: #a05a2c;
+    border: 2px solid #d48b47;
+}
+.survey-btn:hover{
+    background: #d48b47;
+    color: white;
+}
+/* 返回顶部 */
+.top-btn{
+    width: 48px;
+    height: 48px;
+    background: #d48b47;
+    color: white;
+    text-align: center;
+    line-height: 48px;
+    border-radius: 50%;
+    position: fixed;
+    right: 28px;
+    bottom: 35px;
+    font-size: 22px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.top-btn.show{
+    opacity: 1;
+}
+/* 页脚 */
+.footer{
+    text-align: center;
+    padding: 35px 20px;
+    background: #442c1c;
+    color: #fff8f0;
+    margin-top: 70px;
+}
+
